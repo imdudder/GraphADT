@@ -39,7 +39,7 @@ public class Graph {
 
                 addVertex(sourceVertex);
                 addVertex(destVertex);
-
+                addEdge(sourceVertex, destVertex, edgeWeight);
             }
             return true;
         }
