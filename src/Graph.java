@@ -12,8 +12,7 @@ public class Graph {
         vertices = new HashMap<String,Vertex>();
     }
 
-
-    // Read Graph From File
+    //------------------------------ Read Graph From File ----------------------------
     public boolean readGraphFromFile(String filename) {
         try {
             File graphFile = new File(filename);

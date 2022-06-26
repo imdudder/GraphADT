@@ -3,7 +3,6 @@ public class Main {
         Graph g = new Graph();
         String filePath = getPathToFile("testGraph.txt");
         g.readGraphFromFile(filePath);
-        System.out.println("Test");
     }
 
 
