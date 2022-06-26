@@ -84,17 +84,17 @@ public class Graph {
         }
 
         // Begin the algorithm
-        PriorityQueue<Vertex> unvisited = new PriorityQueue<Vertex>(vertices.size(), new Comparator<Vertex>() {
+        PriorityQueue<Vertex> verticesToConsider = new PriorityQueue<Vertex>(vertices.size(), new Comparator<Vertex>() {
             @Override
             public int compare(Vertex v1, Vertex v2) {
                 if (v1.distFromSource > v2.distFromSource) {
-                    return 1;   // v1 has higher priority
+                    return 1;   // v2 has higher priority
                 }
                 else if (v1.distFromSource < v2.distFromSource) {
-                    return -1;
+                    return -1;  // v1 has higher priority
                 }
                 else {
-                    return 0;
+                    return 0;   // Equal priority
                 }
             }
         });
@@ -102,17 +102,31 @@ public class Graph {
         // Set vertices' distance from source to infinity and mark as unvisited
         for (Vertex vtx : vertices.values()) {
             if (vtx.name.equals(source)) {
-                vtx.distFromSource = 0; // Source will be first to be visited
+                vtx.distFromSource = 0;
             }
             else {
                 vtx.distFromSource = Integer.MAX_VALUE;
             }
-            unvisited.add(vtx);
+            // Create dummy vertex to store vertex name and cost in priority queue
+            Vertex dummyVtx = new Vertex(vtx.name);
+            dummyVtx.distFromSource = vtx.distFromSource;
+            verticesToConsider.add(dummyVtx);
         }
 
+        HashMap<String,Vertex> visitedVertices = new HashMap<String,Vertex>();
+
         // Go until all vertices have been visited
-        while (unvisited.size() > 0) {
-            Vertex currentVertex = unvisited.poll(); // Removing marks as visited
+        while (visitedVertices.size() < vertices.size() && !verticesToConsider.isEmpty()) {
+            // Get the name of the next unvisited vertex to visit
+            String currentVertexName = verticesToConsider.poll().name;
+            if (!visitedVertices.isEmpty()) {
+                while (!verticesToConsider.isEmpty() && visitedVertices.containsKey(currentVertexName)) {
+                    currentVertexName = verticesToConsider.poll().name;
+                }
+            }
+            // Get actual vertex using the dummy stored in the priority queue
+            Vertex currentVertex = vertices.get(currentVertexName);
+            visitedVertices.put(currentVertex.name, currentVertex);
 
             // For each neighbor, try to update with a shorter path
             for (Edge linkToNeighbor : currentVertex.neighbors) {
@@ -122,6 +136,10 @@ public class Graph {
                 if (neighbor.distFromSource > tentativeDistFromSource) {
                     neighbor.distFromSource = tentativeDistFromSource;
                     neighbor.prevVertexInPath = currentVertex.name;
+                    // Create dummy vertex to store vertex name and cost in priority queue
+                    Vertex dummyVtx = new Vertex(neighbor.name);
+                    dummyVtx.distFromSource = neighbor.distFromSource;
+                    verticesToConsider.add(dummyVtx);
                 }
             }
         }
@@ -130,7 +148,7 @@ public class Graph {
         Stack<String> path = new Stack<String>();
         path.add("Distance: " + vertices.get(dest).distFromSource);
         String vertexInPath = dest;
-        while (vertexInPath != source) {
+        while (!vertexInPath.equals(source)) {
             path.add(vertexInPath);
             vertexInPath = vertices.get(vertexInPath).prevVertexInPath;
         }
