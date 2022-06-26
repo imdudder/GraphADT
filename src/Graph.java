@@ -1,8 +1,6 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class Graph {
     //================================= Public Methods ===============================
@@ -70,7 +68,78 @@ public class Graph {
         return insertedEdge;
     }
 
-    // Dijkstra's Algorithm
+
+    //--------------------------- Dijkstra's Algorithm -------------------------------
+    public ArrayList<String> dijkstrasShortestPath(String source, String dest) {
+        ArrayList<String> shortestPath = new ArrayList<String>();
+
+        // Check if we're able to compute shortest path. If not return reason why
+        if (!vertices.containsKey(source) || !vertices.containsKey(dest)) {
+            shortestPath.add("Source or destination does not exist");
+            return shortestPath;
+        }
+        if (vertices.get(source).neighbors.size() == 0 || vertices.get(dest).neighbors.size() == 0) {
+            shortestPath.add("Source or destination have no connections to other vertices");
+            return shortestPath;
+        }
+
+        // Begin the algorithm
+        PriorityQueue<Vertex> unvisited = new PriorityQueue<Vertex>(vertices.size(), new Comparator<Vertex>() {
+            @Override
+            public int compare(Vertex v1, Vertex v2) {
+                if (v1.distFromSource > v2.distFromSource) {
+                    return 1;   // v1 has higher priority
+                }
+                else if (v1.distFromSource < v2.distFromSource) {
+                    return -1;
+                }
+                else {
+                    return 0;
+                }
+            }
+        });
+
+        // Set vertices' distance from source to infinity and mark as unvisited
+        for (Vertex vtx : vertices.values()) {
+            if (vtx.name.equals(source)) {
+                vtx.distFromSource = 0; // Source will be first to be visited
+            }
+            else {
+                vtx.distFromSource = Integer.MAX_VALUE;
+            }
+            unvisited.add(vtx);
+        }
+
+        // Go until all vertices have been visited
+        while (unvisited.size() > 0) {
+            Vertex currentVertex = unvisited.poll(); // Removing marks as visited
+
+            // For each neighbor, try to update with a shorter path
+            for (Edge linkToNeighbor : currentVertex.neighbors) {
+                Vertex neighbor = vertices.get(linkToNeighbor.destVertex);
+                int tentativeDistFromSource = currentVertex.distFromSource + linkToNeighbor.weight;
+
+                if (neighbor.distFromSource > tentativeDistFromSource) {
+                    neighbor.distFromSource = tentativeDistFromSource;
+                    neighbor.prevVertexInPath = currentVertex.name;
+                }
+            }
+        }
+
+        // Calculate final answer
+        Stack<String> path = new Stack<String>();
+        path.add("Distance: " + vertices.get(dest).distFromSource);
+        String vertexInPath = dest;
+        while (vertexInPath != source) {
+            path.add(vertexInPath);
+            vertexInPath = vertices.get(vertexInPath).prevVertexInPath;
+        }
+        path.add(source);
+        while (!path.empty()) {
+            shortestPath.add(path.pop());
+        }
+        return shortestPath;
+    }
 
     // Breadth-First Search
 
