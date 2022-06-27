@@ -148,15 +148,23 @@ public class Graph {
             }
         }
 
-        // Calculate final answer
+        shortestPath = plotShortestPath(source, dest);
+        return shortestPath;
+    }
+
+    private ArrayList<String> plotShortestPath(String source, String dest) {
+        ArrayList<String> shortestPath = new ArrayList<String>();
+
         Stack<String> path = new Stack<String>();
         path.add("Distance: " + vertices.get(dest).distFromSource);
         String vertexInPath = dest;
+
         while (!vertexInPath.equals(source)) {
             path.add(vertexInPath);
             vertexInPath = vertices.get(vertexInPath).prevVertexInPath;
         }
         path.add(source);
+
         while (!path.empty()) {
             shortestPath.add(path.pop());
         }
