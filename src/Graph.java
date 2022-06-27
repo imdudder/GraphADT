@@ -11,6 +11,8 @@ public class Graph {
     }
 
     //------------------------------ Read Graph From File ----------------------------
+    // Takes the name of a file. Returns true if it was able to read from the file and
+    // false if the file did not exist.
     public boolean readGraphFromFile(String filename) {
         try {
             File graphFile = new File(filename);
@@ -46,6 +48,7 @@ public class Graph {
     }
 
     // Add Vertex
+    // Returns true if it inserted the vertex and false if it already existed.
     public boolean addVertex(String vertexName) {
         boolean alreadyExists = vertices.containsKey(vertexName);
         if (!alreadyExists) {
@@ -56,6 +59,7 @@ public class Graph {
     }
 
     // Add Edge
+    // Returns true if it was able to insert the edge and false otherwise.
     public boolean addEdge(String source, String dest, int weight) {
         boolean insertedEdge = false;
         if (vertices.containsKey(source) && vertices.containsKey(dest)) {
@@ -179,7 +183,6 @@ public class Graph {
     private class Vertex {
         public Vertex() {
             name = "";
-            degree = 0;
             neighbors = new ArrayList<Edge>();
             distFromSource = Integer.MAX_VALUE;
             prevVertexInPath = "";
@@ -187,7 +190,6 @@ public class Graph {
 
         public Vertex(String name) {
             this.name = name;
-            degree = 0;
             neighbors = new ArrayList<Edge>();
             distFromSource = Integer.MAX_VALUE;
             prevVertexInPath = "";
@@ -214,8 +216,11 @@ public class Graph {
             return addedNeighbor;
         }
 
+        public int getDegree() {
+            return neighbors.size();
+        }
+
         String name;
-        int degree;
         ArrayList<Edge> neighbors;
 
         // Dijkstra's data
